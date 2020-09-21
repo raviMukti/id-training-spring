@@ -7,6 +7,7 @@ import id.training.restapi.repository.ProductRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import javax.persistence.EntityNotFoundException;
 import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
@@ -44,8 +45,26 @@ public class ProductService {
 
     public ProductResponseDTO findProductsById(UUID id)
     {
-        Optional<Product> product = productRepository.findById(id);
-        ProductResponseDTO productResponseDTO = new ProductResponseDTO(product.get().getId(), product.get().getProductName());
-        return productResponseDTO;
+        Product product = productRepository.findById(id).orElseThrow(() -> new EntityNotFoundException());
+
+        return ProductResponseDTO.builder()
+                .id(product.getId())
+                .productName(product.getProductName())
+                .build();
+    }
+
+    public ProductResponseDTO updateProductById(UUID id, String productName)
+    {
+        Product product = productRepository.findById(id)
+                            .map(p -> {
+                                p.setProductName(productName);
+                                return productRepository.save(p);
+                            })
+                            .orElseThrow(() -> new EntityNotFoundException());
+
+        return ProductResponseDTO.builder()
+                .id(product.getId())
+                .productName(product.getProductName())
+                .build();
     }
 }

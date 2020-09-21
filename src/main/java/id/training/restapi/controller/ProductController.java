@@ -6,6 +6,7 @@ import id.training.restapi.model.response.ProductResponseDTO;
 import id.training.restapi.service.ProductService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
@@ -43,5 +44,12 @@ public class ProductController {
     {
         ProductResponseDTO productResponseDTO = productService.findProductsById(id);
         return new ResponseEntity<>(productResponseDTO, HttpStatus.OK);
+    }
+
+    @PutMapping(value = "/products/{id}", consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
+    public ResponseEntity<ProductResponseDTO> updateProductById(@PathVariable UUID id, @RequestBody String productName)
+    {
+        ProductResponseDTO responseDTO = productService.updateProductById(id, productName);
+        return new ResponseEntity<>(responseDTO, HttpStatus.OK);
     }
 }
